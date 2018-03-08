@@ -49,7 +49,7 @@ foreach ($events as $event) {
 							case 'left';
 								newMessage($bot, $event, "もうちょい左や！");
 								break;
-							case 'foward':
+							case 'forward':
 								newMessage($bot, $event, "もうちょい前や！");
 								break;
 							case 'back':
