@@ -35,32 +35,58 @@ foreach ($events as $event) {
 				);
 
 				$result = file_get_contents($ras_url.$message_start.$userId);
+				$exit = False;
 				if ($result != null) {
-       				//raspberry piの状態確認
-					$status = file_get_contents($ras_url.$message_status.$userId);
-					newMessage($bot, $event, $status);
+					while($exit == "False") {
+						//raspberry piの状態確認
+						$status = file_get_contents($ras_url.$message_status.$userId);
+						newMessage($bot, $event, $status);
 
-       				//撮影された写真を受け取る
-					$image = file_get_contents($ras_url.$message_pic.$userId);
-					$ori_path = $pic_path."ori.jpeg";
+						switch ($status) {
+							case 'right':
+								newMessage($bot, $event, "もうちょい右や！");
+								break;
+							case 'left';
+								newMessage($bot, $event, "もうちょい左や！");
+								break;
+							case 'foward':
+								newMessage($bot, $event, "もうちょい前や！");
+								break;
+							case 'back':
+								newMessage($bot, $event, "もうちょい下がってや！");
+								break;
+							case 'ok':
+								newMessage($bot, $event, "ええ感じや！　撮るで！");
+								//撮影された写真を受け取る
+								$image = file_get_contents($ras_url.$message_pic.$userId);
+								$ori_path = $pic_path."ori.jpeg";
 
-       				//キャッシュ回避のためにトークンをファイル名にする
-					$token = $event->getReplyToken();
-					$thumb_path = $pic_path."$token.jpeg";
-					file_put_contents($ori_path, $image);
+		       					//キャッシュ回避のためにトークンをファイル名にする
+								$token = $event->getReplyToken();
+								$thumb_path = $pic_path."$token.jpeg";
+								file_put_contents($ori_path, $image);
 
-       				//サムネイル用にリサイズ
-					transform_image_size($ori_path, $thumb_path);
+		       					//サムネイル用にリサイズ
+								transform_image_size($ori_path, $thumb_path);
 
-       				//LINEに写真とそのサムネイルを送信
-					$bot->pushMessage($event->getUserId(),
-						(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-						->add(new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($ori_path, $thumb_path))
-					);
+		       					//LINEに写真とそのサムネイルを送信
+								$bot->pushMessage($event->getUserId(),
+									(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
+									->add(new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($ori_path, $thumb_path))
+								);
 
-					//写真とサムネイルを削除
-					unlink($ori_path);
-					unlink($thumb_path);
+								//写真とサムネイルを削除
+								unlink($ori_path);
+								unlink($thumb_path);
+
+								$exit = True;
+
+								break;
+
+								//一秒ごとにリクエスト送信
+								sleep(1);
+						}
+					}
 				}
 			} else {
 				$bot->replyMessage($event->getReplyToken(),
@@ -108,6 +134,5 @@ function transform_image_size($srcPath, $dstPath)
 	imagejpeg($canvas, $dstPath);
 	imagedestroy($source);
 	imagedestroy($canvas);
-	$thumb = file_get_contents($dstPath);
 }
 ?>
