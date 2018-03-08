@@ -44,8 +44,8 @@ foreach ($events as $event) {
        			(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
             		->add(new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($my_url.$ori_path, $my_url.$thumb_path))
        		);
-       		imagedestroy($ori_path);
-       		imagedestroy($thumb_path);
+       		unlink($ori_path);
+       		unlink($thumb_path);
        	}
       } else {
         $bot->replyMessage($event->getReplyToken(),
@@ -64,40 +64,6 @@ function newMessage($bot, $event, $message) {
 		(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
             ->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message))	
 	);
-}
-
-function resizePic($original) {
-	$scale = 0.2;
-
-	file_put_contents("temp.jpeg", $original);
-
-	list($original_w, $original_h, $type) = getimagesize($original);
-	file_put_contents("about.txt", getimagesize($original));
-	switch ($type) {
-		case IMAGETYPE_JPEG:
-			$original_image = imagecreatefromjpeg($original);
-			break;
-		
-		default:
-			throw new RuntimeException("知らんファイルや", $type);
-			
-	}
-	$w = $original_w * $scale;
-	$h = $original_h * $scale;
-
-	$canvas = imagecreatetruecolor($w, $h);
-	imagecopyresampled($canvas, $original_image, 0,0,0,0, $w, $h, $original_w, $original_h);
-
-	$resize_path = 'new.jpeg';
-
-	switch ($type) {
-		case IMAGETYPE_JPEG:
-			imagejpeg($canvas, $resize_path);
-			break;
-	}
-	$new_image = file_get_contents($resize_path);
-	imagedestroy($canvas);
-	return $new_image;
 }
 
 function transform_image_size($srcPath, $dstPath, $width, $height)
