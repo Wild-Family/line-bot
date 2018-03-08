@@ -7,7 +7,7 @@ $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '43dc7a84c3368d71a88ea
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //自身
-$my_url = "https://fd66196d.ngrok.io/";
+$my_url = "https://6b7aa076.ngrok.io/";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
@@ -15,10 +15,12 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバ
-$ras_url = "http://ee7e18a2.ngrok.io/";
+$ras_url = "http://b5edb4e5.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
+$message_end = "end/";
+$message_smile = "smile/";
 
 $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 foreach ($events as $event) {
@@ -35,11 +37,11 @@ foreach ($events as $event) {
 					->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('オバチャンに任せとき！'))
 				);
 
-				$result = file_get_contents($ras_url.$message_start.$userId);
+				$start = file_get_contents($ras_url.$message_start.$userId);
 				$exit = False;
 				$taked = False;
 				$count = 0;
-				if ($result != False) {
+				if ($start != False && $start != "wait") {
 					while(!$exit) {
 						//raspberry piの状態確認
 						$status = file_get_contents($ras_url.$message_status.$userId);
@@ -61,6 +63,9 @@ foreach ($events as $event) {
 							case 'nobody':
 								newMessage($bot, $event, "誰もおらんやないかい！");
 								break;
+							case 'smile':
+								newMessage($bot, $event, "もうちょい笑ってや！");
+								break;
 							case 'ok':
 								newMessage($bot, $event, "ええ感じや！　撮るで！");
 
@@ -76,6 +81,8 @@ foreach ($events as $event) {
 
 		       					//サムネイル用にリサイズ
 								transform_image_size($ori_path, $thumb_path);
+
+								$end = file_get_contents($ras_url.$message_end.$userId);
 
 		       					//LINEに写真とそのサムネイルを送信
 								$bot->pushMessage($event->getUserId(),
@@ -108,6 +115,8 @@ foreach ($events as $event) {
 							//unlink($thumb_path);
 						}
 					}
+				} else if ($start == "wait") {
+					newMessage($bot, $event, "ちょっと待ってな！");
 				} else {
 					newMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
 				}
