@@ -11,10 +11,11 @@ $my_url = "https://fd66196d.ngrok.io/";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
-$pic_path = $my_url."pictures/";
+//$pic_path = $my_url."pictures/";
+$pic_path = "pictures/";
 
 //raspberry piサーバ
-$ras_url = "http://a926adfc.ngrok.io/";
+$ras_url = "http://ee7e18a2.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
@@ -36,11 +37,13 @@ foreach ($events as $event) {
 
 				$result = file_get_contents($ras_url.$message_start.$userId);
 				$exit = False;
-				if ($result != null) {
-					while($exit == "False") {
+				$taked = False;
+				$count = 0;
+				if ($result != False) {
+					while(!$exit) {
 						//raspberry piの状態確認
 						$status = file_get_contents($ras_url.$message_status.$userId);
-						newMessage($bot, $event, $status);
+						//newMessage($bot, $event, $status);
 
 						switch ($status) {
 							case 'right':
@@ -55,16 +58,21 @@ foreach ($events as $event) {
 							case 'back':
 								newMessage($bot, $event, "もうちょい下がってや！");
 								break;
+							case 'nobody':
+								newMessage($bot, $event, "誰もおらんやないかい！");
+								break;
 							case 'ok':
 								newMessage($bot, $event, "ええ感じや！　撮るで！");
+
+								//キャッシュ回避のためにトークンをファイル名にする
+								$token = $event->getReplyToken();
+
 								//撮影された写真を受け取る
 								$image = file_get_contents($ras_url.$message_pic.$userId);
-								$ori_path = $pic_path."ori.jpeg";
-
-		       					//キャッシュ回避のためにトークンをファイル名にする
-								$token = $event->getReplyToken();
-								$thumb_path = $pic_path."$token.jpeg";
+								$ori_path = $pic_path."${token}_ori.jpeg";
 								file_put_contents($ori_path, $image);
+
+								$thumb_path = $pic_path."${token}_thumb.jpeg";
 
 		       					//サムネイル用にリサイズ
 								transform_image_size($ori_path, $thumb_path);
@@ -72,21 +80,36 @@ foreach ($events as $event) {
 		       					//LINEに写真とそのサムネイルを送信
 								$bot->pushMessage($event->getUserId(),
 									(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-									->add(new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($ori_path, $thumb_path))
+									->add(new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($my_url.$ori_path, $my_url.$thumb_path))
+									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('楽しんでや～！'))
 								);
-
-								//写真とサムネイルを削除
-								unlink($ori_path);
-								unlink($thumb_path);
-
+								
+								$taked = True;
 								$exit = True;
 
 								break;
+							default:
+								newMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
+								$exit = True;
+						}
 
-								//一秒ごとにリクエスト送信
-								sleep(1);
+						$count++;
+						if ($count == 5) {
+							newMessage($bot, $event, "ええ加減にしいや！　最初からやり直しや！");
+							$exit = True;
+						}
+
+						//一秒ごとにリクエスト送信
+						sleep(1);
+
+						if ($taked) {
+							//写真とサムネイルを削除
+							//unlink($ori_path);
+							//unlink($thumb_path);
 						}
 					}
+				} else {
+					newMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
 				}
 			} else {
 				$bot->replyMessage($event->getReplyToken(),
