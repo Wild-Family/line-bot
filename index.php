@@ -7,7 +7,7 @@ $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '43dc7a84c3368d71a88ea
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //自身
-$my_url = "https://6b7aa076.ngrok.io/";
+$my_url = "https://8ea3798c.ngrok.io/";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
@@ -15,12 +15,20 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバ
-$ras_url = "http://b5edb4e5.ngrok.io/";
+$ras_url = "http://f7d01a4a.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
 $message_end = "end/";
 $message_smile = "smile/";
+$message_angry = "angry/";
+
+//タイムアウト設定
+$ctx = stream_context_create(array('http'=>
+    array(
+        'timeout' => 100,
+    )
+));
 
 $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 foreach ($events as $event) {
@@ -51,14 +59,26 @@ foreach ($events as $event) {
 							case 'right':
 								newMessage($bot, $event, "もうちょい右や！");
 								break;
+							case 'right again':
+								newMessage($bot, $event, "右言うとるやろ！");
+								break;
 							case 'left';
 								newMessage($bot, $event, "もうちょい左や！");
+								break;
+							case 'left again':
+								newMessage($bot, $event, "左言うとるやろ！");
 								break;
 							case 'forward':
 								newMessage($bot, $event, "もうちょい前や！");
 								break;
+							case 'forward again':
+								newMessage($bot, $event, "前言うとるやろ！");
+								break;
 							case 'back':
 								newMessage($bot, $event, "もうちょい下がってや！");
+								break;
+							case 'back again':
+								newMessage($bot, $event, "下がれ言うとるやろ！");
 								break;
 							case 'nobody':
 								newMessage($bot, $event, "誰もおらんやないかい！");
@@ -66,14 +86,24 @@ foreach ($events as $event) {
 							case 'smile':
 								newMessage($bot, $event, "もうちょい笑ってや！");
 								break;
+							case 'smile again':
+								newMessage($bot, $event, "笑顔が足りんで！");
+								break;
 							case 'ok':
 								newMessage($bot, $event, "ええ感じや！　撮るで！");
 
 								//キャッシュ回避のためにトークンをファイル名にする
-								$token = $event->getReplyToken();
+								$token = $event->getReplyToken().microtime(true);
 
 								//撮影された写真を受け取る
-								$image = file_get_contents($ras_url.$message_pic.$userId);
+								$image = file_get_contents($ras_url.$message_pic.$userId, false, $ctx);
+
+								//受け取り失敗
+								if ($image == false) {
+									pushMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
+									$exit = true;
+								}
+
 								$ori_path = $pic_path."${token}_ori.jpeg";
 								file_put_contents($ori_path, $image);
 
@@ -100,8 +130,12 @@ foreach ($events as $event) {
 								$exit = True;
 						}
 
-						$count++;
-						if ($count == 5) {
+						if (!$taked) {
+							$count++;
+						}
+						if ($count == 4) {
+							sleep(2);
+							$angry = file_get_contents($ras_url.$message_angry.$userId);
 							newMessage($bot, $event, "ええ加減にしいや！　最初からやり直しや！");
 							$exit = True;
 						}
@@ -109,11 +143,11 @@ foreach ($events as $event) {
 						//一秒ごとにリクエスト送信
 						sleep(1);
 
-						if ($taked) {
+						//if ($taked) {
 							//写真とサムネイルを削除
 							//unlink($ori_path);
 							//unlink($thumb_path);
-						}
+						//}
 					}
 				} else if ($start == "wait") {
 					newMessage($bot, $event, "ちょっと待ってな！");
