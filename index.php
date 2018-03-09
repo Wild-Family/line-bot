@@ -23,6 +23,11 @@ $message_end = "end/";
 $message_smile = "smile/";
 $message_angry = "angry/";
 
+//写真を保存するディレクトリを作成
+if (file_exists($pic_path)) {
+	mkdir($pic_path);
+}
+
 //タイムアウト設定
 $ctx = stream_context_create(array('http'=>
     array(
