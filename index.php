@@ -15,7 +15,7 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバ
-$ras_url = "http://f7d01a4a.ngrok.io/";
+$ras_url = "http://4390137b.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
@@ -107,6 +107,7 @@ foreach ($events as $event) {
 								if ($image == false) {
 									pushMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
 									$exit = true;
+									break;
 								}
 
 								$ori_path = $pic_path."${token}_ori.jpeg";
