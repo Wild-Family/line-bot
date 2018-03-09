@@ -7,7 +7,7 @@ $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '43dc7a84c3368d71a88ea
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //自身
-$my_url = "https://8ea3798c.ngrok.io/";
+$my_url = "https://fec9a0dc.ngrok.io/";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
@@ -15,7 +15,7 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバ
-$ras_url = "http://4390137b.ngrok.io/";
+$ras_url = "http://01c46361.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
@@ -24,14 +24,14 @@ $message_smile = "smile/";
 $message_angry = "angry/";
 
 //写真を保存するディレクトリを作成
-if (file_exists($pic_path)) {
+if (!file_exists($pic_path)) {
 	mkdir($pic_path);
 }
 
 //タイムアウト設定
 $ctx = stream_context_create(array('http'=>
     array(
-        'timeout' => 100,
+        'timeout' => 200,
     )
 ));
 
@@ -79,11 +79,29 @@ foreach ($events as $event) {
 							case 'forward again':
 								newMessage($bot, $event, "前言うとるやろ！");
 								break;
+							case 'forwards':
+								newMessage($bot, $event, "みんなもっと前や！");
+								break;
+							case 'forwards again':
+								newMessage($bot, $event, "みんなもっと前言うとるやろ！");
+								break;
 							case 'back':
 								newMessage($bot, $event, "もうちょい下がってや！");
 								break;
 							case 'back again':
 								newMessage($bot, $event, "下がれ言うとるやろ！");
+								break;
+							case 'backs':
+								newMessage($bot, $event, "みんな下がってや！");
+								break;
+							case 'backs':
+								newMessage($bot, $event, "みんな下がれや！");
+								break;
+							case 'center':
+								newMessage($bot, $event, "もっと真ん中に寄ってや！");
+								break;
+							case 'center again';
+								newMessage($bot, $event, "真ん中に寄れ言うとるやろ！");
 								break;
 							case 'nobody':
 								newMessage($bot, $event, "誰もおらんやないかい！");
@@ -94,6 +112,12 @@ foreach ($events as $event) {
 							case 'smile again':
 								newMessage($bot, $event, "笑顔が足りんで！");
 								break;
+							case 'smiles':
+								newMessage($bot, $event, "みんな笑ってや！");
+								break;
+							case 'smiles again':
+								newMessage($bot, $event, "みんな笑えや！");
+								break;
 							case 'ok':
 								newMessage($bot, $event, "ええ感じや！　撮るで！");
 
@@ -101,7 +125,15 @@ foreach ($events as $event) {
 								$token = $event->getReplyToken().microtime(true);
 
 								//撮影された写真を受け取る
-								$image = file_get_contents($ras_url.$message_pic.$userId, false, $ctx);
+								//$image = file_get_contents($ras_url.$message_pic.$userId, false, $ctx);
+								$curl = curl_init();
+								curl_setopt($curl, CURLOPT_URL, $ras_url.$message_pic.$userId);
+								curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+								curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+								$image = curl_exec($curl);
+
+								curl_close($curl);
 
 								//受け取り失敗
 								if ($image == false) {
