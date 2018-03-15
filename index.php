@@ -7,7 +7,7 @@ $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '43dc7a84c3368d71a88ea
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //自身
-$my_url = "https://fec9a0dc.ngrok.io/";
+$my_url = "https://obachan-bot.herokuapp.com/";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
@@ -192,6 +192,10 @@ foreach ($events as $event) {
 				} else {
 					newMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
 				}
+				
+			//デモ
+			newMessage($bot, $event, "このオバちゃんはデモらしいで！くわしいことはhttps://github.com/Wild-Family/2018trankを見たってや！");
+
 			} else {
 				$bot->replyMessage($event->getReplyToken(),
 					(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
