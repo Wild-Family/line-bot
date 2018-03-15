@@ -8,16 +8,16 @@ $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('YOUR_CHANNEL_ACCESS_T
 $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => 'YOUR_CHANNEL_SECRET']);
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
-//自身
-$my_url = "https://obachan-bot.herokuapp.com/";
+//BotサーバのURL 末尾のスラッシュまで記述
+$my_url = "YOUR_BOT_SERVER_URL";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
 //$pic_path = $my_url."pictures/";
 $pic_path = "pictures/";
 
-//raspberry piサーバ
-$ras_url = "http://01c46361.ngrok.io/";
+//raspberry piサーバURL 末尾のスラッシュまで記述
+$ras_url = "YOUR_RASPBERRY_PI_SERVER_URL";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
