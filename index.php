@@ -196,7 +196,7 @@ foreach ($events as $event) {
 			//デモ
 			$bot->pushMessage($event->getUserId(),
 									(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("このオバちゃんはデモらしいで！"))
+									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("このオバチャンはデモらしいで！"))
 									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("https://github.com/Wild-Family/2018trank"))
 									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("くわしいことはここを見たってや！"))
 								);
