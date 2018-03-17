@@ -16,17 +16,19 @@
  * under the License.
  */
 
-namespace LINE\LINEBot\Event;
+namespace LINE\LINEBot\Event\MessageEvent;
+
+use LINE\LINEBot\Event\MessageEvent;
 
 /**
- * A class that represents the event of postback.
+ * A class that represents the message event of file.
  *
- * @package LINE\LINEBot\Event
+ * @package LINE\LINEBot\Event\MessageEvent
  */
-class PostbackEvent extends BaseEvent
+class FileMessage extends MessageEvent
 {
     /**
-     * PostbackEvent constructor.
+     * FileMessage constructor.
      *
      * @param array $event
      */
@@ -36,24 +38,22 @@ class PostbackEvent extends BaseEvent
     }
 
     /**
-     * Returns the data of postback.
+     * Returns filename of the file message.
      *
      * @return string
      */
-    public function getPostbackData()
+    public function getFileName()
     {
-        return $this->event['postback']['data'];
+        return $this->message['fileName'];
     }
 
     /**
-     * Returns the params of postback.
+     * Returns filesize of the file message.
      *
-     * @return array|null
+     * @return string
      */
-    public function getPostbackParams()
+    public function getFileSize()
     {
-        return array_key_exists('params', $this->event['postback'])
-            ? $this->event['postback']['params']
-            : null;
+        return $this->message['fileSize'];
     }
 }
