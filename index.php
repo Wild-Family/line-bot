@@ -3,13 +3,13 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 //作成したチャネルのアクセストークンを記述
-$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('YOUR_CHANNEL_ACCESS_TOKEN');
+$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('E2b+JfiYAUe8AyL1xzkRAI2k2ufhTNNi57fiFpswHDkA81DqYUPhr0609xYgcznc9nBKsQnGWuc6+0EK9BkSJuNede+xBAnDLX2P4iR3Pvxbpl+AOIRxhuYrrR9eIJfyJ1whUrP3kIMgq12kbOmnrQdB04t89/1O/w1cDnyilFU=');
 //同チャネルのChannel Secretを記述
-$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => 'YOUR_CHANNEL_SECRET']);
+$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '43dc7a84c3368d71a88ea81f1a8b5e70']);
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //BotサーバのURL 末尾のスラッシュまで記述
-$my_url = "YOUR_BOT_SERVER_URL";
+$my_url = "https://obachan-bot.herokuapp.com/";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
@@ -17,7 +17,7 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバURL 末尾のスラッシュまで記述
-$ras_url = "YOUR_RASPBERRY_PI_SERVER_URL";
+$ras_url = "http://f6e9ccbf.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
@@ -193,16 +193,14 @@ foreach ($events as $event) {
 					newMessage($bot, $event, "ちょっと待ってな！");
 				} else {
 					newMessage($bot, $event, "オバチャンちょっと調子悪いみたいや！　ホンマごめんな！");
+					//デモ
+					$bot->pushMessage($event->getUserId(),
+						(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
+						->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("このオバチャンはデモらしいで！"))
+						->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("https://github.com/Wild-Family/2018trank"))
+						->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("くわしいことはここを見たってや！"))
+					);
 				}
-
-			//デモ
-			$bot->pushMessage($event->getUserId(),
-									(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("このオバチャンはデモらしいで！"))
-									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("https://github.com/Wild-Family/2018trank"))
-									->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder("くわしいことはここを見たってや！"))
-								);
-
 			} else {
 				$bot->replyMessage($event->getReplyToken(),
 					(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
