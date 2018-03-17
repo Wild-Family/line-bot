@@ -17,7 +17,7 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバURL 末尾のスラッシュまで記述
-$ras_url = "http://f6e9ccbf.ngrok.io/";
+$ras_url = "http://0da3e1b9.ngrok.io/";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
