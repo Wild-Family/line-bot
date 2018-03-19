@@ -3,13 +3,13 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 //作成したチャネルのアクセストークンを記述
-$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('E2b+JfiYAUe8AyL1xzkRAI2k2ufhTNNi57fiFpswHDkA81DqYUPhr0609xYgcznc9nBKsQnGWuc6+0EK9BkSJuNede+xBAnDLX2P4iR3Pvxbpl+AOIRxhuYrrR9eIJfyJ1whUrP3kIMgq12kbOmnrQdB04t89/1O/w1cDnyilFU=');
+$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('YOUR_CHANNEL_ACCESS_TOKEN');
 //同チャネルのChannel Secretを記述
-$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '43dc7a84c3368d71a88ea81f1a8b5e70']);
+$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => 'YOUR_CHANNEL_SECRET']);
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //BotサーバのURL 末尾のスラッシュまで記述
-$my_url = "https://obachan-bot.herokuapp.com/";
+$my_url = "YOUR_BOT_SERVER_URL";
 $resource = $my_url."resource/";
 $obachan_full_path = $resource."obachan_full.jpg";
 $obachan_thumb_path = $resource."obachan_thumb.jpg";
@@ -17,7 +17,7 @@ $obachan_thumb_path = $resource."obachan_thumb.jpg";
 $pic_path = "pictures/";
 
 //raspberry piサーバURL 末尾のスラッシュまで記述
-$ras_url = "http://80f348ba.ngrok.io/";
+$ras_url = "YOUR_RASPBERRY_PI_SERVER_URL";
 $message_start = "start/";
 $message_status = "status/";
 $message_pic = "pic/";
